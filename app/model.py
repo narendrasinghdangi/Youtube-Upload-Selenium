@@ -37,8 +37,8 @@ class Video:
             )
             caption = f"{caption}\n\n{hashtags}" if caption else hashtags
 
-        return 
-        
+        return caption
+
 
 image_system_prompt: str = """# Video Thumbnail Generator Prompt
 

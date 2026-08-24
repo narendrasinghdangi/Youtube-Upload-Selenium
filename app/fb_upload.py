@@ -392,16 +392,24 @@ def upload_video(driver: webdriver.Chrome, video: Video) -> None:
     print(f"  [Facebook] Done: {video.video_file_path}")
 
 
-def upload_multiple_videos(driver: webdriver.Chrome, videos: list[Video]) -> None:
+def upload_multiple_videos(driver: webdriver.Chrome, videos: list[Video]) -> list[tuple[bool, str]]:
     """Uploads each video to Facebook (as a Reel) using the provided driver.
 
     The driver should already be on the Facebook tab. Call
     browser_session.switch_to_facebook() before calling this.
+
+    Returns a list of (success, error_message) tuples, one per video in
+    the same order as `videos`. error_message is "" on success.
     """
+    results: list[tuple[bool, str]] = []
     for video in videos:
         try:
             upload_video(driver, video)
+            results.append((True, ""))
         except Exception as exc:  # noqa: BLE001
-            print(f"[Facebook] Failed to upload '{video.video_file_path}': {type(exc).__name__}: {exc!r}")
+            error_message = f"{type(exc).__name__}: {exc!r}"
+            print(f"[Facebook] Failed to upload '{video.video_file_path}': {error_message}")
             traceback.print_exc()
+            results.append((False, error_message))
         time.sleep(2)
+    return results

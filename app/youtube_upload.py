@@ -294,15 +294,23 @@ def upload_video(driver: webdriver.Chrome, video: Video) -> None:
     print(f"  [YouTube] Done: {video.video_title}")
 
 
-def upload_multiple_videos(driver: webdriver.Chrome, videos: list[Video]) -> None:
+def upload_multiple_videos(driver: webdriver.Chrome, videos: list[Video]) -> list[tuple[bool, str]]:
     """Uploads each video to YouTube using the provided driver.
-    
+
     The driver should already be on the YouTube tab. Call
     browser_session.switch_to_youtube() before calling this.
+
+    Returns a list of (success, error_message) tuples, one per video in
+    the same order as `videos`. error_message is "" on success.
     """
+    results: list[tuple[bool, str]] = []
     for video in videos:
         try:
             upload_video(driver, video)
+            results.append((True, ""))
         except Exception as exc:  # noqa: BLE001
-            print(f"[YouTube] Failed to upload '{video.video_title}': {type(exc).__name__}: {exc!r}")
+            error_message = f"{type(exc).__name__}: {exc!r}"
+            print(f"[YouTube] Failed to upload '{video.video_title}': {error_message}")
+            results.append((False, error_message))
         time.sleep(2)
+    return results

@@ -3,3 +3,5 @@ __pycache__/
 geckodriver.log
 
 .env
+/videos
+/images
